@@ -1,0 +1,218 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function hasApprovedRole(role) {
+      return signedIn() && userDoc().data.approvedRole == role;
+    }
+
+    function isAdmin() {
+      return hasApprovedRole("admin");
+    }
+
+    function isCoordinator() {
+      return hasApprovedRole("coordinator");
+    }
+
+    function isFaculty() {
+      return hasApprovedRole("faculty");
+    }
+
+    function isVolunteer() {
+      return hasApprovedRole("volunteer");
+    }
+
+    function isApprovedUser() {
+      return signedIn() &&
+        userDoc().data.approvedRole in [
+          "admin",
+          "faculty",
+          "coordinator",
+          "volunteer",
+          "member"
+        ];
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{userId} {
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly([
+          "name",
+          "email",
+          "requestedRole",
+          "approvedRole",
+          "status",
+          "createdAt"
+        ])
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.requestedRole in [
+          "volunteer",
+          "member",
+          "coordinator",
+          "faculty"
+        ]
+        && request.resource.data.approvedRole == "pending"
+        && request.resource.data.status == "pending";
+
+      allow read: if isOwner(userId) || isAdmin();
+
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          "approvedRole",
+          "status",
+          "reviewedAt"
+        ])
+        && request.resource.data.status in ["approved", "rejected", "pending"]
+        && (
+          (request.resource.data.status == "approved"
+            && request.resource.data.approvedRole in [
+              "volunteer",
+              "member",
+              "coordinator",
+              "faculty",
+              "admin"
+            ]) ||
+          (request.resource.data.status != "approved")
+        );
+
+      allow delete: if false;
+    }
+
+    match /event_submissions/{submissionId} {
+      allow create: if isApprovedUser()
+        && request.resource.data.keys().hasOnly([
+          "title",
+          "description",
+          "location",
+          "date",
+          "posterURL",
+          "posterPublicId",
+          "createdBy",
+          "createdByName",
+          "createdByRole",
+          "status",
+          "coordinatorApprovedBy",
+          "facultyApprovedBy",
+          "createdAt"
+        ])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdByName == request.auth.token.email
+        && request.resource.data.createdByRole in [
+          "volunteer",
+          "member",
+          "coordinator",
+          "faculty",
+          "admin"
+        ]
+        && request.resource.data.status == "pending_coordinator"
+        && request.resource.data.coordinatorApprovedBy == ""
+        && request.resource.data.facultyApprovedBy == "";
+
+      allow read: if isAdmin()
+        || isCoordinator()
+        || isFaculty()
+        || (signedIn() && resource.data.createdBy == request.auth.uid);
+
+      allow update: if (
+        isCoordinator()
+        && resource.data.status == "pending_coordinator"
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          "status",
+          "coordinatorApprovedBy",
+          "coordinatorApprovedAt"
+        ])
+        && request.resource.data.status in ["pending_faculty", "rejected"]
+        && request.resource.data.coordinatorApprovedBy == request.auth.uid
+      ) || (
+        isFaculty()
+        && resource.data.status == "pending_faculty"
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          "status",
+          "facultyApprovedBy",
+          "facultyApprovedAt"
+        ])
+        && request.resource.data.status in ["approved", "rejected"]
+        && request.resource.data.facultyApprovedBy == request.auth.uid
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /feedback/{feedbackId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          "userId",
+          "userEmail",
+          "role",
+          "message",
+          "resolved",
+          "createdAt"
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userEmail == request.auth.token.email
+        && request.resource.data.resolved == false;
+
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          "resolved"
+        ]);
+
+      allow delete: if isAdmin();
+    }
+
+    match /events/{docId} {
+      allow read: if true;
+      allow create: if (
+        isAdmin()
+      ) || (
+        isFaculty()
+        && request.resource.data.keys().hasOnly([
+          "title",
+          "description",
+          "date",
+          "location",
+          "imageURL",
+          "public_id",
+          "createdAt",
+          "sourceSubmissionId",
+          "submittedBy",
+          "submittedByName",
+          "publishedBy"
+        ])
+        && request.resource.data.publishedBy == request.auth.uid
+      );
+      allow update, delete: if isAdmin();
+    }
+
+    match /gallery/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /achievements/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /teamMembers/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
