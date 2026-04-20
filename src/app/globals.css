@@ -1,0 +1,238 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-orbitron: "Orbitron", "Trebuchet MS", sans-serif;
+  --font-rajdhani: "Rajdhani", "Arial Narrow", sans-serif;
+  --font-inter: "Inter", "Segoe UI", sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at top, rgba(61, 190, 255, 0.12), transparent 28%),
+      radial-gradient(circle at 80% 10%, rgba(255, 176, 89, 0.08), transparent 20%),
+      linear-gradient(180deg, #07111f 0%, #040812 55%, #02050b 100%);
+    color: #f8fafc;
+    font-family: var(--font-inter);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-orbitron);
+  }
+
+  p {
+    font-family: var(--font-rajdhani);
+  }
+
+  a {
+    transition:
+      color 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+}
+
+@layer components {
+  .tech-background {
+    background:
+      radial-gradient(circle at 18% 20%, rgba(61, 190, 255, 0.15), transparent 24%),
+      radial-gradient(circle at 86% 14%, rgba(255, 176, 89, 0.1), transparent 20%),
+      linear-gradient(180deg, #08111f 0%, #03060d 100%);
+  }
+
+  .page-shell {
+    @apply min-h-screen px-6 py-12 lg:px-8;
+    background:
+      radial-gradient(circle at top left, rgba(61, 190, 255, 0.12), transparent 24%),
+      linear-gradient(180deg, #07111f 0%, #03060d 100%);
+  }
+
+  .page-wrap {
+    @apply mx-auto max-w-7xl;
+  }
+
+  .page-hero {
+    @apply premium-panel mb-10 overflow-hidden px-8 py-10 md:px-10 md:py-12;
+  }
+
+  .premium-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent);
+    pointer-events: none;
+  }
+
+  .premium-panel {
+    @apply rounded-[32px] border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(2,8,23,0.55)] backdrop-blur-xl;
+  }
+
+  .premium-card {
+    @apply rounded-[28px] border border-white/10 bg-slate-950/50 p-6 shadow-[0_18px_45px_rgba(2,8,23,0.45)];
+  }
+
+  .premium-stat {
+    @apply rounded-[24px] border border-white/10 bg-white/[0.04] px-5 py-5 backdrop-blur;
+  }
+
+  .premium-badge {
+    @apply inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10 text-sm font-bold text-accent;
+  }
+
+  .content-card {
+    @apply rounded-[28px] border border-white/10 bg-slate-950/55 p-6 shadow-[0_18px_45px_rgba(2,8,23,0.4)];
+  }
+
+  .auth-shell {
+    @apply flex min-h-screen items-center justify-center px-6 py-12;
+    background:
+      radial-gradient(circle at top, rgba(34, 211, 238, 0.15), transparent 26%),
+      linear-gradient(180deg, #08111f 0%, #03060d 100%);
+  }
+
+  .auth-card {
+    @apply w-full max-w-lg rounded-[32px] border border-white/10 bg-slate-950/70 p-8 shadow-[0_30px_80px_rgba(2,8,23,0.55)] backdrop-blur-xl md:p-10;
+  }
+
+  .field {
+  @apply w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-400 focus:border-accent/60 focus:bg-white/10;
+}
+
+/* Ensure dropdown visibility */
+select.field {
+  background-color: #020617; /* Dark background matching theme */
+  color: #ffffff;
+  appearance: none; /* Optional: for consistent styling */
+}
+
+/* Style dropdown options */
+select.field option {
+  background-color: #020617;
+  color: #ffffff;
+}
+
+  .field-light {
+    @apply w-full rounded-2xl border border-white/10 bg-white/95 px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-cyan-400;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-950 shadow-[0_16px_40px_rgba(34,211,238,0.25)] transition hover:-translate-y-0.5 hover:bg-cyan-300;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:border-accent/60 hover:bg-white/10;
+  }
+
+  .btn-admin {
+    @apply inline-flex items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-300/10 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.16em] text-accent transition hover:bg-cyan-300/20;
+  }
+
+  .section-title {
+    @apply mb-5 text-3xl font-bold leading-tight text-white md:text-5xl;
+  }
+
+  .eyebrow {
+    @apply text-sm font-semibold uppercase tracking-[0.28em] text-accent;
+  }
+
+  .premium-link-card {
+    @apply flex items-center justify-between rounded-[24px] border border-white/10 bg-slate-950/60 px-5 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:-translate-y-0.5 hover:border-accent/40 hover:text-accent;
+  }
+
+  .footer-pill {
+    @apply rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-accent/40 hover:text-accent;
+  }
+
+  .nav-link {
+    @apply text-sm font-medium tracking-wide text-slate-200 hover:text-accent;
+  }
+}
+
+.react-calendar {
+  width: 100%;
+  max-width: 100%;
+  background: rgba(237, 177, 177, 0.96);
+  border: none;
+  border-radius: 24px;
+  padding: 1rem;
+  font-family: inherit;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+}
+
+.dark .react-calendar {
+  background-color: #111827; /* slate-900 */
+  color: #f9fafb;            /* slate-50 for strong contrast */
+}
+
+.react-calendar__navigation button {
+  color: #2563eb;
+  font-weight: 600;
+  min-width: 44px;
+  background: transparent;
+  border-radius: 12px;
+}
+
+.dark .react-calendar__navigation button {
+  color: #60a5fa;
+}
+
+.react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #0b64e1;
+}
+
+.dark .react-calendar__month-view__weekdays {
+  color: #d5dff0;
+}
+
+.react-calendar__tile {
+  border-radius: 12px;
+  padding: 10px 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: rgb(0, 193, 252);
+}
+
+.react-calendar__tile:hover {
+  background: #284fcd;
+}
+
+.dark .react-calendar__tile:hover {
+  background: #1f2937;
+}
+
+.react-calendar__tile--now {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-radius: 12px;
+}
+
+.react-calendar__tile--active {
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+.react-calendar__tile--disabled {
+  color: #9ca3af;
+}
+
+.event-day {
+  background: #22c55e !important;
+  color: #ffffff !important;
+  border-radius: 12px;
+}
